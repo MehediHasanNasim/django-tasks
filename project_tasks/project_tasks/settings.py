@@ -42,8 +42,12 @@ DJANGO_APPS = [
 ]
 
 PROJECT_APPS = [
+    # for Task 1
     "core",
     "invitations",
+
+    # for Task 2
+    'permissions',
 ]
 
 THIRD_PARTY_APPS = [
@@ -143,3 +147,6 @@ EMAIL_PORT = config("EMAIL_PORT", cast=int)
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+
+
+AUTH_API_URL = "https://localhost:3000/check_permission"
