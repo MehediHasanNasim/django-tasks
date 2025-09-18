@@ -1,0 +1,58 @@
+version: "3.8"
+services:
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    environment:
+      - SERVICE_NAME=auth-service
+    volumes:
+      - ./auth-service/logs:/var/log/auth-service
+    ports:
+      - "8000:8000"
+    networks:
+      - loki-net
+
+  tenant-service:
+    build: ./tenant-service
+    container_name: tenant-service
+    environment:
+      - SERVICE_NAME=tenant-service
+    volumes:
+      - ./tenant-service/logs:/var/log/tenant-service
+    ports:
+      - "8001:8001"
+    networks:
+      - loki-net
+
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: loki
+    ports:
+      - "3100:3100"
+    networks:
+      - loki-net
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: promtail
+    volumes:
+      - ./promtail-config.yaml:/etc/promtail/config.yaml
+      - ./auth-service/logs:/var/log/auth-service
+      - ./tenant-service/logs:/var/log/tenant-service
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command: -config.file=/etc/promtail/config.yaml
+    networks:
+      - loki-net
+
+  grafana:
+    image: grafana/grafana:9.5.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - loki-net
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+networks:
+  loki-net:
